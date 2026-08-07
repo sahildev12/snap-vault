@@ -1,0 +1,16 @@
+<?php
+/**
+ * Admin — Interactive MAP
+ */
+declare(strict_types=1);
+
+require_once dirname(__DIR__) . '/includes/init.php';
+require_once BASE_PATH . 'includes/auth_check.php';
+$requiredRole = 'admin';
+require BASE_PATH . 'includes/role_check.php';
+
+$pageTitle = 'MAP';
+require BASE_PATH . 'includes/header.php';
+$mapBackUrl = BASE_URL . 'admin/dashboard.php';
+require BASE_PATH . 'includes/map-shell.php';
+require BASE_PATH . 'includes/footer.php';

@@ -1,0 +1,8 @@
+# SnapVault - protect sensitive directories from direct listing
+Options -Indexes
+
+<IfModule mod_authz_core.c>
+    <FilesMatch "^\.">
+        Require all denied
+    </FilesMatch>
+</IfModule>

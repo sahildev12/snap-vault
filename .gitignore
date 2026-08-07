@@ -1,0 +1,25 @@
+# Dependencies / OS
+.DS_Store
+Thumbs.db
+*.tmp
+*.swp
+
+# Uploaded user content (keep folder structure + protectors)
+/uploads/**
+!/uploads/.htaccess
+!/uploads/index.php
+!/uploads/profiles/
+!/uploads/profiles/.htaccess
+!/uploads/profiles/index.php
+!/uploads/tasks/
+!/uploads/tasks/.htaccess
+
+# Runtime logs (never commit)
+/storage/logs/*.log
+/storage/logs/*.txt
+!/storage/logs/.gitkeep
+
+# Local env overrides
+.env
+.env.*
+!.env.example
