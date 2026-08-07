@@ -1,3 +1,7 @@
+<p align="center">
+  <img src="assets/images/snapvault-logo.png" alt="SnapVault" width="420">
+</p>
+
 # SnapVault
 
 Team image management system built with **Core PHP 8+**, MySQL, Bootstrap 5, and vanilla JavaScript. No frameworks.
