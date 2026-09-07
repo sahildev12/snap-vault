@@ -46,7 +46,7 @@ if (!function_exists('nav_active')) {
                     <i class="bi bi-chat-dots"></i>
                     <span>Chat</span>
                 </a>
-                <a class="nav-link<?= nav_active($script, ['map.php']) ?>" href="<?= Helper::e(BASE_URL . 'admin/map.php') ?>">
+                <a class="nav-link<?= nav_active($script, ['map.php', 'map-block.php', 'map-phc.php']) ?>" href="<?= Helper::e(BASE_URL . 'admin/map.php') ?>">
                     <i class="bi bi-map"></i>
                     <span>MAP</span>
                 </a>
@@ -92,7 +92,7 @@ if (!function_exists('nav_active')) {
                     <i class="bi bi-chat-dots"></i>
                     <span>Chat</span>
                 </a>
-                <a class="nav-link<?= nav_active($script, ['map.php']) ?>" href="<?= Helper::e(BASE_URL . 'member/map.php') ?>">
+                <a class="nav-link<?= nav_active($script, ['map.php', 'map-block.php', 'map-phc.php']) ?>" href="<?= Helper::e(BASE_URL . 'member/map.php') ?>">
                     <i class="bi bi-map"></i>
                     <span>MAP</span>
                 </a>

@@ -65,7 +65,7 @@ define('BASE_URL', $detectBaseUrl());
 
 define('APP_NAME', 'Jammu First');
 define('APP_TAGLINE', 'Chief Medical Office - Jammu');
-define('APP_VERSION', '1.2.0');
+define('APP_VERSION', '1.3.2');
 
 // Database — local XAMPP vs production Hostinger
 if (IS_LOCAL) {

@@ -11,6 +11,5 @@ require BASE_PATH . 'includes/role_check.php';
 
 $pageTitle = 'MAP';
 require BASE_PATH . 'includes/header.php';
-$mapBackUrl = BASE_URL . 'member/dashboard.php';
 require BASE_PATH . 'includes/map-shell.php';
 require BASE_PATH . 'includes/footer.php';

@@ -1,0 +1,670 @@
+/**
+ * Interactive MAP + Block / PHC information pages (CMO Jammu reference layout)
+ */
+
+:root {
+    --cmo-maroon: #4a1212;
+    --cmo-maroon-deep: #3a0e0e;
+    --cmo-maroon-soft: #6b1c1c;
+    --cmo-gold: #d4a017;
+    --cmo-gold-soft: #e8c547;
+    --cmo-card: #ffffff;
+    --cmo-ink: #1d1d1f;
+    --cmo-muted: #5c5c5c;
+}
+
+/* —— Interactive map (inside app shell) —— */
+.imap-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 16px;
+    width: 100%;
+    min-width: 0;
+}
+
+.imap-hint {
+    margin: 0;
+    font-size: 14px;
+    color: var(--color-body-muted);
+}
+
+.imap-stage {
+    position: relative;
+    width: 100%;
+    max-width: 920px;
+    margin: 0 auto;
+    border-radius: 16px;
+    overflow: hidden;
+    background: #fff;
+    box-shadow: var(--shadow-card);
+    border: 1px solid var(--color-hairline);
+    line-height: 0;
+}
+
+.imap-canvas {
+    position: relative;
+    width: min(100%, calc((100dvh - 250px) * 1024 / 745));
+    margin: 0 auto;
+}
+
+.imap-stage img.imap-base {
+    display: block;
+    width: 100%;
+    height: auto;
+    user-select: none;
+    pointer-events: none;
+}
+
+.imap-hotspots {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    z-index: 2;
+}
+
+.imap-hotspots a {
+    outline: none;
+    background: none;
+}
+
+.imap-hotspot {
+    fill: transparent;
+    stroke: transparent;
+    cursor: pointer;
+}
+
+.imap-hotspots a:hover .imap-hotspot,
+.imap-hotspots a:focus-visible .imap-hotspot {
+    fill: transparent;
+    stroke: transparent;
+}
+
+.imap-marker {
+    position: absolute;
+    z-index: 3;
+    width: 22px;
+    height: 22px;
+    transform: translate(-50%, -100%);
+    text-decoration: none;
+    pointer-events: none;
+    background: none;
+    box-shadow: none;
+    filter: none;
+}
+
+.imap-marker-pin {
+    display: block;
+    width: 22px;
+    height: 22px;
+    border-radius: 50% 50% 50% 0;
+    transform: rotate(-45deg);
+    background: var(--cmo-maroon);
+    border: 2px solid #fff;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18);
+}
+
+.imap-marker-pin::after {
+    content: "";
+    position: absolute;
+    inset: 5px;
+    border-radius: 50%;
+    background: var(--cmo-gold);
+}
+
+.imap-marker-label {
+    position: absolute;
+    top: calc(100% + 5px);
+    left: 50%;
+    transform: translateX(-50%);
+    padding: 3px 8px;
+    border-radius: 999px;
+    background: #fff;
+    border: 1px solid rgba(74, 18, 18, 0.14);
+    color: var(--cmo-maroon);
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+    white-space: nowrap;
+    line-height: 1.2;
+    box-shadow: none;
+    pointer-events: none;
+}
+
+.imap-legend {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    justify-content: center;
+}
+
+.imap-legend a {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 8px 12px;
+    border-radius: 999px;
+    border: 1px solid var(--color-hairline);
+    background: #fff;
+    color: var(--color-ink);
+    text-decoration: none;
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.imap-legend a i {
+    color: var(--cmo-maroon);
+}
+
+.imap-legend a:hover {
+    border-color: var(--cmo-maroon);
+    color: var(--cmo-maroon);
+}
+
+/* —— CMO block / PHC shell —— */
+body.cmo-map-body {
+    margin: 0;
+    min-height: 100vh;
+    min-height: 100dvh;
+    background: #1a1a1a;
+    font-family: "Segoe UI", system-ui, -apple-system, sans-serif;
+    color: var(--cmo-ink);
+}
+
+.cmo-shell {
+    min-height: 100vh;
+    min-height: 100dvh;
+    display: flex;
+    flex-direction: column;
+}
+
+.cmo-topbar {
+    background: var(--cmo-maroon);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    padding: 10px 22px;
+    flex-shrink: 0;
+}
+
+.cmo-brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    min-width: 0;
+    flex: 1 1 auto;
+}
+
+.cmo-brand-mark {
+    width: 42px;
+    height: 42px;
+    border-radius: 50%;
+    background: #fff;
+    color: var(--cmo-maroon);
+    display: grid;
+    place-items: center;
+    font-size: 1.25rem;
+    flex-shrink: 0;
+}
+
+.cmo-brand-copy {
+    min-width: 0;
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+
+.cmo-brand-title {
+    font-size: 15px;
+    font-weight: 600;
+    color: #fff;
+    white-space: nowrap;
+}
+
+.cmo-brand-sep {
+    width: 1px;
+    height: 22px;
+    background: rgba(255, 255, 255, 0.45);
+}
+
+.cmo-brand-block {
+    font-size: 16px;
+    font-weight: 700;
+    color: var(--cmo-gold-soft);
+    letter-spacing: 0.01em;
+}
+
+.cmo-top-actions {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-shrink: 0;
+}
+
+.cmo-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    border: 0;
+    border-radius: 8px;
+    padding: 9px 14px;
+    font-size: 14px;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+    color: #fff;
+    background: var(--cmo-maroon-soft);
+    transition: background 0.15s ease;
+}
+
+.cmo-btn:hover {
+    background: #7a2424;
+    color: #fff;
+}
+
+.cmo-btn-icon {
+    width: 40px;
+    height: 40px;
+    padding: 0;
+}
+
+.cmo-hero {
+    position: relative;
+    flex: 1 1 auto;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: calc(100dvh - 108px);
+    background-color: #4a1212;
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+}
+
+.cmo-hero::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0.08) 0%, rgba(0, 0, 0, 0.28) 100%);
+    pointer-events: none;
+}
+
+.cmo-hero-inner {
+    position: relative;
+    z-index: 1;
+    width: min(1180px, calc(100% - 32px));
+    margin: 24px auto;
+    display: grid;
+    grid-template-columns: 260px minmax(0, 1fr);
+    gap: 20px;
+    align-items: stretch;
+}
+
+.cmo-profile-card,
+.cmo-actions-card,
+.cmo-content-card {
+    background: var(--cmo-card);
+    border-radius: 18px;
+    box-shadow: 0 12px 32px rgba(0, 0, 0, 0.28);
+}
+
+.cmo-profile-card {
+    padding: 28px 20px 20px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.cmo-profile-photo {
+    width: 128px;
+    height: 128px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 4px solid #f3e7e7;
+    margin: 0 auto 14px;
+    display: block;
+    background: #f0f0f0;
+}
+
+.cmo-profile-name {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--cmo-maroon);
+}
+
+.cmo-profile-role {
+    margin: 4px 0 12px;
+    font-size: 13px;
+    color: var(--cmo-ink);
+}
+
+.cmo-profile-phone {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 13px;
+    color: var(--cmo-muted);
+    text-decoration: none;
+    margin-bottom: 18px;
+}
+
+.cmo-profile-phone i {
+    color: var(--cmo-maroon);
+}
+
+.cmo-staff-btn {
+    width: 100%;
+    margin-top: auto;
+    background: var(--cmo-maroon);
+    border-radius: 10px;
+    padding: 12px 14px;
+}
+
+.cmo-staff-btn:hover {
+    background: var(--cmo-maroon-deep);
+}
+
+.cmo-actions-card {
+    padding: 8px;
+    overflow: hidden;
+}
+
+.cmo-action-grid {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0;
+    height: 100%;
+}
+
+.cmo-action {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+    padding: 22px 20px;
+    text-decoration: none;
+    color: inherit;
+    min-height: 138px;
+    border-right: 1px solid #f0eaea;
+    border-bottom: 1px solid #f0eaea;
+    transition: background 0.15s ease;
+}
+
+.cmo-action:nth-child(3n) {
+    border-right: 0;
+}
+
+.cmo-action:nth-child(n+4) {
+    border-bottom: 0;
+}
+
+.cmo-action:hover {
+    background: #faf6f6;
+    color: inherit;
+}
+
+.cmo-action-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 12px;
+    display: grid;
+    place-items: center;
+    font-size: 1.25rem;
+    color: #fff;
+}
+
+.cmo-action-icon.is-gallery { background: #7c3aed; }
+.cmo-action-icon.is-maps { background: #e11d48; }
+.cmo-action-icon.is-phc { background: #16a34a; }
+.cmo-action-icon.is-infra { background: #2563eb; }
+.cmo-action-icon.is-equip { background: #ea580c; }
+.cmo-action-icon.is-road { background: #7c3aed; }
+.cmo-action-icon.is-info { background: #0f766e; }
+
+.cmo-action-title {
+    margin: 0;
+    font-size: 15px;
+    font-weight: 700;
+    color: var(--cmo-ink);
+}
+
+.cmo-action-rule {
+    width: 36px;
+    height: 2px;
+    background: var(--cmo-maroon);
+    border-radius: 2px;
+}
+
+.cmo-action-text {
+    margin: 0;
+    font-size: 12px;
+    line-height: 1.4;
+    color: var(--cmo-muted);
+}
+
+.cmo-content-card {
+    grid-column: 1 / -1;
+    padding: 22px 24px;
+}
+
+.cmo-content-card h2 {
+    margin: 0 0 8px;
+    font-size: 20px;
+    color: var(--cmo-maroon);
+}
+
+.cmo-content-card p {
+    margin: 0 0 12px;
+    color: var(--cmo-muted);
+    line-height: 1.55;
+}
+
+.cmo-back-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    margin-bottom: 14px;
+    color: var(--cmo-maroon);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+}
+
+.cmo-back-link:hover {
+    color: var(--cmo-maroon-deep);
+}
+
+.cmo-phc-list {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 12px;
+    margin-top: 8px;
+}
+
+.cmo-phc-item {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    padding: 16px;
+    border: 1px solid #eee;
+    border-radius: 14px;
+    text-decoration: none;
+    color: inherit;
+    background: #fff;
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+}
+
+.cmo-phc-item:hover {
+    border-color: var(--cmo-maroon);
+    box-shadow: 0 6px 18px rgba(74, 18, 18, 0.12);
+    color: inherit;
+}
+
+.cmo-phc-item strong {
+    color: var(--cmo-maroon);
+    font-size: 15px;
+}
+
+.cmo-phc-item span {
+    font-size: 12px;
+    color: var(--cmo-muted);
+}
+
+.cmo-gallery-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+    gap: 12px;
+}
+
+.cmo-gallery-grid img {
+    width: 100%;
+    aspect-ratio: 4/3;
+    object-fit: cover;
+    border-radius: 12px;
+    background: #f3f3f3;
+}
+
+.cmo-staff-table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+}
+
+.cmo-staff-table th,
+.cmo-staff-table td {
+    text-align: left;
+    padding: 10px 12px;
+    border-bottom: 1px solid #eee;
+}
+
+.cmo-staff-table th {
+    color: var(--cmo-maroon);
+    font-weight: 700;
+}
+
+.cmo-footer {
+    background: var(--cmo-maroon);
+    color: rgba(255, 255, 255, 0.92);
+    text-align: center;
+    padding: 12px 16px;
+    font-size: 13px;
+    flex-shrink: 0;
+}
+
+.cmo-empty {
+    padding: 24px;
+    text-align: center;
+    color: var(--cmo-muted);
+    background: #fafafa;
+    border-radius: 12px;
+}
+
+@media (max-width: 1024px) {
+    .cmo-hero-inner {
+        width: min(1180px, calc(100% - 24px));
+        grid-template-columns: 230px minmax(0, 1fr);
+        gap: 14px;
+        margin: 20px auto;
+    }
+
+    .cmo-action {
+        padding: 16px 14px;
+        min-height: 120px;
+    }
+}
+
+@media (max-width: 900px) {
+    .cmo-topbar {
+        padding: 10px 14px;
+    }
+
+    .cmo-hero {
+        align-items: stretch;
+        min-height: auto;
+        padding: 16px 0 20px;
+    }
+
+    .cmo-hero-inner {
+        grid-template-columns: 1fr;
+        width: calc(100% - 24px);
+        margin: 0 auto;
+    }
+
+    .cmo-action-grid {
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+    }
+
+    .cmo-action {
+        border-right: 1px solid #f0eaea;
+        border-bottom: 1px solid #f0eaea;
+    }
+
+    .cmo-action:nth-child(3n) {
+        border-right: 1px solid #f0eaea;
+    }
+
+    .cmo-action:nth-child(2n) {
+        border-right: 0;
+    }
+
+    .cmo-action:nth-child(n+5) {
+        border-bottom: 0;
+    }
+
+    .cmo-brand-sep {
+        display: none;
+    }
+
+    .imap-marker-label {
+        font-size: 10px;
+        padding: 2px 6px;
+    }
+}
+
+@media (max-width: 560px) {
+    .cmo-brand-title {
+        white-space: normal;
+        font-size: 13px;
+    }
+
+    .cmo-btn span {
+        display: none;
+    }
+
+    .cmo-action-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .cmo-action {
+        min-height: 0;
+        border-right: 0 !important;
+    }
+
+    .cmo-action:nth-child(n+5) {
+        border-bottom: 1px solid #f0eaea;
+    }
+
+    .cmo-action:last-child {
+        border-bottom: 0;
+    }
+
+    .imap-marker-label {
+        display: none;
+    }
+
+    .imap-marker-pin {
+        width: 18px;
+        height: 18px;
+    }
+
+    .imap-marker {
+        width: 18px;
+        height: 18px;
+    }
+}

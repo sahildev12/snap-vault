@@ -1119,6 +1119,7 @@ input[type="file"].form-control::file-selector-button {
     max-width: var(--content-max);
     width: 100%;
     margin: 0 auto;
+    min-width: 0;
 }
 
 /* ??? Cards (soft shadow + hover, modest radius) ??? */
