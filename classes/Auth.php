@@ -31,6 +31,23 @@ class Auth
         $_SESSION['username'] = $user['username'];
         $_SESSION['profile']  = $user['profile'];
 
+        // Refresh the session cookie so the long lifetime applies after login
+        if (defined('SESSION_LIFETIME') && SESSION_LIFETIME > 0) {
+            $params = session_get_cookie_params();
+            setcookie(
+                session_name(),
+                session_id(),
+                [
+                    'expires' => time() + SESSION_LIFETIME,
+                    'path' => $params['path'] ?: '/',
+                    'domain' => $params['domain'] ?? '',
+                    'secure' => (bool) ($params['secure'] ?? false),
+                    'httponly' => true,
+                    'samesite' => $params['samesite'] ?? 'Lax',
+                ]
+            );
+        }
+
         return ['success' => true, 'user' => $user];
     }
 

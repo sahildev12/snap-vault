@@ -193,4 +193,33 @@ class Helper
 
         return $html;
     }
+
+    public static function absoluteUrl(string $path = ''): string
+    {
+        $path = $path !== '' ? $path : BASE_URL;
+        if (str_starts_with($path, 'http://') || str_starts_with($path, 'https://')) {
+            return $path;
+        }
+
+        $https = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+            || (isset($_SERVER['SERVER_PORT']) && (int) $_SERVER['SERVER_PORT'] === 443)
+            || (strtolower((string) ($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '')) === 'https')
+            || (strtolower((string) ($_SERVER['HTTP_X_FORWARDED_SSL'] ?? '')) === 'on')
+            || (str_contains(strtolower((string) ($_SERVER['HTTP_CF_VISITOR'] ?? '')), 'https'));
+
+        if (!$https && defined('IS_LOCAL') && !IS_LOCAL) {
+            $https = true;
+        }
+
+        $scheme = $https ? 'https' : 'http';
+        $host = (string) ($_SERVER['HTTP_HOST'] ?? 'localhost');
+        $normalized = '/' . ltrim(str_replace('\\', '/', $path), '/');
+
+        return $scheme . '://' . $host . $normalized;
+    }
+
+    public static function isHttpsRequest(): bool
+    {
+        return str_starts_with(self::absoluteUrl('/'), 'https://');
+    }
 }

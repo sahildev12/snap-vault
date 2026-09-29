@@ -268,8 +268,14 @@ require BASE_PATH . 'includes/header.php';
                         <label class="form-label" for="memberPassword">
                             Password <span class="text-muted fw-normal" id="passwordHint"></span>
                         </label>
-                        <input type="password" name="password" id="memberPassword" class="form-control"
-                               minlength="6" autocomplete="new-password">
+                        <div class="input-group password-toggle-group">
+                            <input type="password" name="password" id="memberPassword" class="form-control"
+                                   minlength="6" autocomplete="new-password" placeholder="At least 6 characters">
+                            <button type="button" class="btn btn-outline-secondary password-toggle-btn" id="memberPasswordToggle"
+                                    title="Show password" aria-label="Show password" aria-pressed="false">
+                                <i class="bi bi-eye" aria-hidden="true"></i>
+                            </button>
+                        </div>
                     </div>
                     <div class="col-md-6">
                         <label class="form-label" for="memberStatus">Status</label>
@@ -311,6 +317,21 @@ $extraScripts = '<script>
     const formTitle = document.getElementById("memberFormTitle");
     const formSubmit = document.getElementById("memberFormSubmit");
     const passwordHint = document.getElementById("passwordHint");
+    const memberPasswordToggle = document.getElementById("memberPasswordToggle");
+
+    function resetPasswordVisibility(input, toggle) {
+        if (!input) return;
+        input.type = "password";
+        if (!toggle) return;
+        toggle.setAttribute("aria-pressed", "false");
+        toggle.setAttribute("title", "Show password");
+        toggle.setAttribute("aria-label", "Show password");
+        const icon = toggle.querySelector("i");
+        if (icon) {
+            icon.classList.remove("bi-eye-slash");
+            icon.classList.add("bi-eye");
+        }
+    }
 
     function resetFilePicker() {
         if (memberProfileInput) memberProfileInput.value = "";
@@ -329,6 +350,7 @@ $extraScripts = '<script>
         memberUsername.value = "";
         memberPassword.value = "";
         memberPassword.required = true;
+        resetPasswordVisibility(memberPassword, memberPasswordToggle);
         passwordHint.textContent = "";
         syncStatusSelect(1);
         memberPreview.src = placeholder;
@@ -358,6 +380,7 @@ $extraScripts = '<script>
         memberUsername.value = m.username;
         memberPassword.value = "";
         memberPassword.required = false;
+        resetPasswordVisibility(memberPassword, memberPasswordToggle);
         passwordHint.textContent = "(leave blank to keep)";
         syncStatusSelect(m.status);
         memberPreview.src = m.profile_url || placeholder;
@@ -407,13 +430,7 @@ $extraScripts = '<script>
             const input = document.getElementById("resetPasswordInput");
             const toggle = document.getElementById("resetPasswordToggle");
             input.value = "";
-            input.type = "password";
-            if (toggle) {
-                toggle.setAttribute("aria-pressed", "false");
-                toggle.setAttribute("title", "Show password");
-                toggle.setAttribute("aria-label", "Show password");
-                toggle.querySelector("i")?.classList.replace("bi-eye-slash", "bi-eye");
-            }
+            resetPasswordVisibility(input, toggle);
             bootstrap.Modal.getOrCreateInstance(document.getElementById("resetPasswordModal")).show();
         }
     });

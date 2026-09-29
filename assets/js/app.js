@@ -110,6 +110,272 @@
                 return false;
             }
         },
+
+        async deletePresentation(id) {
+            const ok = await this.confirm('Delete this presentation permanently?');
+            if (!ok) return false;
+
+            const form = new FormData();
+            form.append('id', String(id));
+            form.append('_csrf', cfg.csrfToken);
+
+            try {
+                const res = await fetch(cfg.baseUrl + 'ajax/delete-presentation.php', {
+                    method: 'POST',
+                    headers: {
+                        'X-Requested-With': 'XMLHttpRequest',
+                        'X-CSRF-TOKEN': cfg.csrfToken,
+                        'Accept': 'application/json',
+                    },
+                    body: form,
+                });
+                const data = await res.json();
+                if (!data.success) {
+                    this.toast(data.message || 'Delete failed.', 'danger');
+                    return false;
+                }
+                this.toast(data.message || 'Presentation deleted.', 'success');
+                const row = document.querySelector(`.presentation-row[data-id="${id}"]`);
+                if (row) {
+                    row.style.transition = 'opacity 0.25s ease';
+                    row.style.opacity = '0';
+                    setTimeout(() => row.remove(), 250);
+                }
+                return true;
+            } catch (err) {
+                this.toast('Network error while deleting.', 'danger');
+                return false;
+            }
+        },
+
+        openPresentationViewer(btn) {
+            const modalEl = document.getElementById('presentationViewerModal');
+            const frame = document.getElementById('presentationViewerFrame');
+            const loading = document.getElementById('presentationViewerLoading');
+            const loadingStatus = document.getElementById('presentationViewerLoadingStatus');
+            const fallback = document.getElementById('presentationViewerFallback');
+            const fallbackText = document.getElementById('presentationViewerFallbackText');
+            const fallbackDownload = document.getElementById('presentationViewerFallbackDownload');
+            const titleEl = document.getElementById('presentationViewerTitle');
+            const subtitleEl = document.getElementById('presentationViewerSubtitle');
+            const downloadBtn = document.getElementById('presentationViewerDownload');
+
+            if (!modalEl || !frame || !btn) return;
+
+            const ext = (btn.dataset.ext || '').toLowerCase();
+            const title = btn.dataset.title || 'Presentation';
+            const filename = btn.dataset.filename || '';
+            const inlineUrl = btn.dataset.inlineUrl || '';
+            const publicUrl = btn.dataset.publicUrl || '';
+            const officeUrl = btn.dataset.officeUrl || '';
+            const downloadUrl = btn.dataset.downloadUrl || '';
+            const isHttps = btn.dataset.https === '1' || window.location.protocol === 'https:';
+
+            let blobUrl = null;
+            let statusTimer = null;
+            let hideTimer = null;
+            let timeoutTimer = null;
+
+            const clearTimers = () => {
+                if (statusTimer) clearInterval(statusTimer);
+                if (hideTimer) clearTimeout(hideTimer);
+                if (timeoutTimer) clearTimeout(timeoutTimer);
+                statusTimer = null;
+                hideTimer = null;
+                timeoutTimer = null;
+            };
+
+            const revokeBlob = () => {
+                if (blobUrl) {
+                    URL.revokeObjectURL(blobUrl);
+                    blobUrl = null;
+                }
+            };
+
+            const setStatus = (message) => {
+                if (loadingStatus && message) loadingStatus.textContent = message;
+            };
+
+            const showLoading = (message) => {
+                setStatus(message || 'Please wait while the file is prepared.');
+                loading?.classList.remove('d-none');
+                fallback?.classList.add('d-none');
+            };
+
+            const hideLoading = () => {
+                loading?.classList.add('d-none');
+            };
+
+            const showFallback = (message) => {
+                clearTimers();
+                hideLoading();
+                frame.classList.add('d-none');
+                fallback?.classList.remove('d-none');
+                if (fallbackText && message) fallbackText.textContent = message;
+            };
+
+            const showFrame = (url, options = {}) => {
+                frame.classList.remove('d-none');
+                frame.onload = () => {
+                    if (typeof options.onLoad === 'function') {
+                        options.onLoad();
+                        return;
+                    }
+                    hideLoading();
+                };
+                frame.onerror = () => {
+                    showFallback(options.errorMessage || 'Could not load preview. Please download the file instead.');
+                };
+                frame.src = url;
+            };
+
+            const verifyPublicFile = async () => {
+                if (!publicUrl) return true;
+                try {
+                    const response = await fetch(publicUrl, { method: 'HEAD', cache: 'no-store' });
+                    return response.ok;
+                } catch (err) {
+                    return false;
+                }
+            };
+
+            const loadPdfPreview = async () => {
+                showLoading('Fetching PDF from server…');
+                const response = await fetch(inlineUrl, { credentials: 'same-origin', cache: 'no-store' });
+                if (!response.ok) {
+                    throw new Error('Could not load the PDF. Try downloading the file instead.');
+                }
+
+                const contentType = (response.headers.get('content-type') || '').toLowerCase();
+                if (contentType.includes('text/html')) {
+                    throw new Error('Your session may have expired. Refresh the page and try again.');
+                }
+
+                setStatus('Rendering PDF preview…');
+                const blob = await response.blob();
+                if (!blob.size) {
+                    throw new Error('The PDF file appears to be empty.');
+                }
+
+                revokeBlob();
+                blobUrl = URL.createObjectURL(blob);
+                showFrame(blobUrl, {
+                    onLoad: () => {
+                        hideTimer = setTimeout(hideLoading, 400);
+                    },
+                    errorMessage: 'Could not render the PDF preview. Please download the file instead.',
+                });
+            };
+
+            const loadOfficePreview = () => {
+                const messages = [
+                    'Connecting to Microsoft Office viewer…',
+                    'Downloading document for preview…',
+                    'Converting slides for in-browser viewing…',
+                    'Still preparing preview — large files can take a minute…',
+                ];
+                let step = 0;
+                showLoading(messages[0]);
+                statusTimer = setInterval(() => {
+                    step = Math.min(step + 1, messages.length - 1);
+                    setStatus(messages[step]);
+                }, 4500);
+
+                showFrame(officeUrl, {
+                    onLoad: () => {
+                        setStatus('Finalizing preview…');
+                        hideTimer = setTimeout(hideLoading, 5000);
+                    },
+                    errorMessage: 'Office viewer could not open this file. Please download it instead.',
+                });
+
+                timeoutTimer = setTimeout(async () => {
+                    if (!loading || loading.classList.contains('d-none')) return;
+
+                    if (publicUrl) {
+                        setStatus('Trying alternate preview viewer…');
+                        const googleUrl = 'https://docs.google.com/gview?embedded=true&url=' + encodeURIComponent(publicUrl);
+                        showFrame(googleUrl, {
+                            onLoad: () => {
+                                hideTimer = setTimeout(() => {
+                                    if (loading && !loading.classList.contains('d-none')) {
+                                        showFallback('Preview is taking too long. Download the file to open it in PowerPoint.');
+                                    } else {
+                                        hideLoading();
+                                    }
+                                }, 15000);
+                            },
+                            errorMessage: 'Preview is not available right now. Please download the file instead.',
+                        });
+                        return;
+                    }
+
+                    showFallback('Preview timed out. Download the file to open it in PowerPoint.');
+                }, 30000);
+            };
+
+            titleEl.textContent = title;
+            subtitleEl.textContent = filename;
+            if (downloadBtn) {
+                downloadBtn.href = downloadUrl;
+                downloadBtn.classList.toggle('d-none', !downloadUrl);
+            }
+            if (fallbackDownload) fallbackDownload.href = downloadUrl;
+
+            clearTimers();
+            revokeBlob();
+            showLoading('Opening presentation…');
+            frame.classList.add('d-none');
+            frame.src = 'about:blank';
+
+            modalEl._presentationCleanup = () => {
+                clearTimers();
+                revokeBlob();
+                frame.src = 'about:blank';
+            };
+
+            const modal = bootstrap.Modal.getOrCreateInstance(modalEl);
+            modal.show();
+
+            (async () => {
+                try {
+                    if (ext === 'pdf') {
+                        await loadPdfPreview();
+                        return;
+                    }
+
+                    if (ext === 'ppt' || ext === 'pptx') {
+                        if (!isHttps || !officeUrl) {
+                            showFallback('PowerPoint preview needs HTTPS on your live server. Download the file to open it locally.');
+                            return;
+                        }
+
+                        showLoading('Checking document availability…');
+                        const reachable = await verifyPublicFile();
+                        if (!reachable) {
+                            showFallback('The preview service cannot reach this file on the server. Download it instead, or ask your admin to check file permissions.');
+                            return;
+                        }
+
+                        loadOfficePreview();
+                        return;
+                    }
+
+                    showFallback('Preview is not supported for this file type. Please download it instead.');
+                } catch (err) {
+                    showFallback(err.message || 'Could not load preview. Please download the file instead.');
+                }
+            })();
+
+            if (!modalEl.dataset.viewerBound) {
+                modalEl.dataset.viewerBound = '1';
+                modalEl.addEventListener('hidden.bs.modal', () => {
+                    if (typeof modalEl._presentationCleanup === 'function') {
+                        modalEl._presentationCleanup();
+                    }
+                });
+            }
+        },
     };
 
     window.SnapVault = SnapVault;
@@ -495,6 +761,21 @@
             e.preventDefault();
             const id = btn.dataset.id;
             if (id) SnapVault.deleteImage(id);
+        });
+
+        document.body.addEventListener('click', (e) => {
+            const btn = e.target.closest('.btn-delete-presentation');
+            if (!btn) return;
+            e.preventDefault();
+            const id = btn.dataset.id;
+            if (id) SnapVault.deletePresentation(id);
+        });
+
+        document.body.addEventListener('click', (e) => {
+            const btn = e.target.closest('.btn-view-presentation');
+            if (!btn) return;
+            e.preventDefault();
+            SnapVault.openPresentationViewer(btn);
         });
 
         const period = document.getElementById('filterPeriod');

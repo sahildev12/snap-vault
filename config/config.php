@@ -45,6 +45,15 @@ if ($forcedEnv === 'local') {
 define('APP_ENV', $isLocal ? 'local' : 'production');
 define('IS_LOCAL', $isLocal);
 
+// Error display — like Laravel APP_DEBUG (detailed errors when true)
+$debugOverride = strtolower((string) (getenv('SNAPVAULT_DEBUG') ?: ''));
+define(
+    'APP_DEBUG',
+    $debugOverride === '1'
+    || $debugOverride === 'true'
+    || ($debugOverride === '' && IS_LOCAL)
+);
+
 /**
  * Web base URL — prefer path relative to document root when available
  */
@@ -65,7 +74,7 @@ define('BASE_URL', $detectBaseUrl());
 
 define('APP_NAME', 'Jammu First');
 define('APP_TAGLINE', 'Chief Medical Office - Jammu');
-define('APP_VERSION', '1.3.2');
+define('APP_VERSION', '1.3.9');
 
 // Database — local XAMPP vs production Hostinger
 if (IS_LOCAL) {
@@ -75,9 +84,9 @@ if (IS_LOCAL) {
     define('DB_PASS', '');
 } else {
     define('DB_HOST', 'localhost');
-    define('DB_NAME', 'u456613426_snapvault');
-    define('DB_USER', 'u456613426_snapvault');
-    define('DB_PASS', '?E>9d!&Gc3N');
+    define('DB_NAME', 'u378089677_snapvault');
+    define('DB_USER', 'u378089677_snapvault');
+    define('DB_PASS', 'SBFcJ4a*');
 }
 
 define('DB_CHARSET', 'utf8mb4');
@@ -86,8 +95,9 @@ define('DB_CHARSET', 'utf8mb4');
 define('LOG_DIR', BASE_PATH . 'storage' . DIRECTORY_SEPARATOR . 'logs' . DIRECTORY_SEPARATOR);
 define('LOG_ERRORS', true);
 
-// Session
+// Session — keep users logged in for a long time (until they log out)
 define('SESSION_NAME', 'snapvault_session');
+define('SESSION_LIFETIME', 60 * 60 * 24 * 365); // 1 year
 
 // Uploads
 define('UPLOAD_DIR', BASE_PATH . 'uploads' . DIRECTORY_SEPARATOR);
@@ -96,13 +106,24 @@ define('PROFILE_DIR', UPLOAD_DIR . 'profiles' . DIRECTORY_SEPARATOR);
 define('PROFILE_URL', UPLOAD_URL . 'profiles/');
 define('TASK_UPLOAD_DIR', UPLOAD_DIR . 'tasks' . DIRECTORY_SEPARATOR);
 define('TASK_UPLOAD_URL', UPLOAD_URL . 'tasks/');
+define('PRESENTATION_UPLOAD_DIR', UPLOAD_DIR . 'presentations' . DIRECTORY_SEPARATOR);
+define('PRESENTATION_UPLOAD_URL', UPLOAD_URL . 'presentations/');
+define('DEMO_DOCS_DIR', BASE_PATH . 'demo doc' . DIRECTORY_SEPARATOR);
 define('UPLOAD_MAX_BYTES', 10 * 1024 * 1024); // 10MB
+define('PRESENTATION_MAX_BYTES', 50 * 1024 * 1024); // 50MB
 
 define('ALLOWED_EXTENSIONS', ['jpg', 'jpeg', 'png', 'webp']);
 define('ALLOWED_MIME_TYPES', [
     'image/jpeg',
     'image/png',
     'image/webp',
+]);
+
+define('PRESENTATION_EXTENSIONS', ['ppt', 'pptx', 'pdf']);
+define('PRESENTATION_MIME_TYPES', [
+    'application/vnd.ms-powerpoint',
+    'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+    'application/pdf',
 ]);
 
 /** @var list<string> */
@@ -115,6 +136,7 @@ define('MAP_DIR', BASE_PATH . 'map' . DIRECTORY_SEPARATOR);
 // Webhooks (leave WEBHOOK_URL empty to disable outbound)
 define('WEBHOOK_URL', getenv('JAMMU_WEBHOOK_URL') ?: '');
 define('WEBHOOK_SECRET', getenv('JAMMU_WEBHOOK_SECRET') ?: 'jammu-first-webhook-secret');
+define('VIEW_TOKEN_SECRET', getenv('JAMMU_VIEW_TOKEN_SECRET') ?: WEBHOOK_SECRET);
 
 // Chat polling
 define('CHAT_POLL_SECONDS', 3);

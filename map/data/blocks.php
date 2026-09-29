@@ -1,6 +1,8 @@
 <?php
 /**
- * Interactive map — blocks & PHCs (dummy data until CMO sends finals)
+ * Interactive map — blocks & PHCs
+ * Client data loaded per-block from map/data/{slug}.php
+ * Jammu has no client pack yet (placeholder remains).
  */
 declare(strict_types=1);
 
@@ -38,158 +40,12 @@ $jfPhc = static function (
 };
 
 return [
-    'pallanwala' => [
-        'name' => 'Pallanwala',
-        'marker' => ['x' => 15.5, 'y' => 32],
-        'hero' => null,
-        'maps_url' => 'https://www.google.com/maps/search/?api=1&query=Pallanwala+Jammu',
-        'bmo' => [
-            'name' => 'Dr. Rajesh Khajuria',
-            'title' => 'Block Medical Officer',
-            'phone' => '9419101101',
-            'photo' => null,
-        ],
-        'gallery' => [],
-        'infrastructure' => "Block Hospital Pallanwala: 30-bed facility with OPD, IPD, labour room, minor OT, lab, and pharmacy. Campus includes staff quarters and an ambulance bay. Approach road is metalled. Dedicated electricity feeder with DG backup.",
-        'equipments' => "X-ray (100 mA), ultrasound (shared weekly), 2 ambulances, oxygen concentrators (4), cardiac monitor, autoclave, cold-chain ILR/deep freezer, and a basic pathology lab (CBC, RBS, malaria, typhoid).",
-        'roadmap' => "2026–27: add a 10-bed female ward, upgrade lab to NABL-ready, start telemedicine OPD twice a week, and complete boundary-wall lighting.",
-        'staff' => [
-            ['name' => 'Dr. Rajesh Khajuria', 'role' => 'Block Medical Officer', 'phone' => '9419101101'],
-            ['name' => 'Dr. Meenakshi Verma', 'role' => 'Medical Officer', 'phone' => '9419101102'],
-            ['name' => 'Smt. Kavita Devi', 'role' => 'Nursing Sister', 'phone' => '9419101103'],
-            ['name' => 'Sh. Rakesh Lal', 'role' => 'Pharmacist', 'phone' => '9419101104'],
-        ],
-        'phcs' => [
-            $jfPhc('phc-pallanwala', 'PHC Pallanwala', 'PHC Pallanwala Jammu', 'Dr. Anil Sharma', '9419101111', 'Pallanwala'),
-            $jfPhc('phc-khour', 'PHC Khour', 'PHC Khour Jammu', 'Dr. Pooja Bhat', '9419101112', 'Pallanwala'),
-        ],
-    ],
-    'chowki-choura' => [
-        'name' => 'Chowki Choura',
-        'marker' => ['x' => 36.8, 'y' => 11.5],
-        'hero' => null,
-        'maps_url' => 'https://www.google.com/maps/search/?api=1&query=Chowki+Choura+Jammu',
-        'bmo' => [
-            'name' => 'Dr. Sameer Malik',
-            'title' => 'Block Medical Officer',
-            'phone' => '9419101201',
-            'photo' => null,
-        ],
-        'gallery' => [],
-        'infrastructure' => "Block HQ at Chowki Choura with 20 beds, 4 OPD rooms, immunization clinic, and a store. Hilly approach; ambulance stationed on-site. Rainwater harvesting tank added in 2024.",
-        'equipments' => "Portable ultrasound (on call), 1 ambulance, oxygen cylinders (6), ILR, microscope, ECG machine, and delivery kits. Referral linkage with GMC Jammu for emergencies.",
-        'roadmap' => "Next year: new labour-room suite, solar panels on the OPD block, and a weekly orthopedic camp.",
-        'staff' => [
-            ['name' => 'Dr. Sameer Malik', 'role' => 'Block Medical Officer', 'phone' => '9419101201'],
-            ['name' => 'Dr. Nidhi Gupta', 'role' => 'Medical Officer', 'phone' => '9419101202'],
-            ['name' => 'Smt. Renu Bala', 'role' => 'ANM', 'phone' => '9419101203'],
-        ],
-        'phcs' => [
-            $jfPhc('phc-chowki-choura', 'PHC Chowki Choura', 'PHC Chowki Choura Jammu', 'Dr. Imran Qureshi', '9419101211', 'Chowki Choura'),
-        ],
-    ],
-    'akhnoor' => [
-        'name' => 'Akhnoor',
-        'marker' => ['x' => 37.5, 'y' => 28],
-        'hero' => null,
-        'maps_url' => 'https://www.google.com/maps/search/?api=1&query=Akhnoor+Jammu',
-        'bmo' => [
-            'name' => 'Dr. Sunita Jamwal',
-            'title' => 'Block Medical Officer',
-            'phone' => '9419101301',
-            'photo' => null,
-        ],
-        'gallery' => [],
-        'infrastructure' => "Block Hospital Akhnoor: 50-bed unit with emergency, labour room, OT (minor), X-ray, and lab. Separate isolation room. Parking and waiting shed for attendants.",
-        'equipments' => "Digital X-ray, 3 ambulances, 8 oxygen concentrators, defibrillator, phototherapy unit, and fully stocked labour-room equipment. Blood storage linkage with district hospital.",
-        'roadmap' => "Upgrade to 70 beds, add a SNCU step-down unit, and commission a new diagnostic block.",
-        'staff' => [
-            ['name' => 'Dr. Sunita Jamwal', 'role' => 'Block Medical Officer', 'phone' => '9419101301'],
-            ['name' => 'Dr. Vikram Singh', 'role' => 'Surgeon (visiting)', 'phone' => '9419101302'],
-            ['name' => 'Dr. Asha Rani', 'role' => 'Medical Officer', 'phone' => '9419101303'],
-            ['name' => 'Sh. Mohd. Rafiq', 'role' => 'Lab Technician', 'phone' => '9419101304'],
-        ],
-        'phcs' => [
-            $jfPhc('phc-akhnoor', 'PHC Akhnoor', 'PHC Akhnoor Jammu', 'Dr. Harpreet Kour', '9419101311', 'Akhnoor'),
-            $jfPhc('phc-jourian', 'PHC Jourian', 'PHC Jourian Jammu', 'Dr. Naveen Gupta', '9419101312', 'Akhnoor'),
-        ],
-    ],
-    'kot-bhalwal' => [
-        'name' => 'Kot Bhalwal',
-        'marker' => ['x' => 55.5, 'y' => 29],
-        'hero' => null,
-        'maps_url' => 'https://www.google.com/maps/search/?api=1&query=Kot+Bhalwal+Jammu',
-        'bmo' => [
-            'name' => 'Dr. Neha Sharma',
-            'title' => 'Block Medical Officer',
-            'phone' => '9876543210',
-            'photo' => null,
-        ],
-        'gallery' => [],
-        'infrastructure' => "Block Hospital Kot Bhalwal: two-storey building with 40 beds, OPD wing, labour room, minor OT, lab, and pharmacy. Campus has staff quarters, generator room, and ambulance bay. Landscaped front lawn and ramped access.",
-        'equipments' => "100 mA X-ray, ultrasound (twice weekly), 2 ambulances, oxygen concentrators (6), ECG, autoclave, cold-chain ILR, and basic pathology. Delivery kits and emergency crash cart in labour room.",
-        'roadmap' => "2026–27: new pediatric ward, solar rooftop, digital OPD tokens, and specialist camps (gynecology, ENT) every month.",
-        'staff' => [
-            ['name' => 'Dr. Neha Sharma', 'role' => 'Block Medical Officer', 'phone' => '9876543210'],
-            ['name' => 'Dr. Rohit Mahajan', 'role' => 'Medical Officer', 'phone' => '9419101402'],
-            ['name' => 'Smt. Priya Devi', 'role' => 'Nursing Sister', 'phone' => '9419101403'],
-            ['name' => 'Sh. Ajay Kumar', 'role' => 'Pharmacist', 'phone' => '9419101404'],
-            ['name' => 'Smt. Seema Rani', 'role' => 'ANM', 'phone' => '9419101405'],
-        ],
-        'phcs' => [
-            $jfPhc('phc-kot-bhalwal', 'PHC Kot Bhalwal', 'PHC Kot Bhalwal Jammu', 'Dr. Amit Khajuria', '9419101411', 'Kot Bhalwal'),
-            $jfPhc('phc-bhalwal', 'PHC Bhalwal', 'PHC Bhalwal Jammu', 'Dr. Shweta Sharma', '9419101412', 'Kot Bhalwal'),
-        ],
-    ],
-    'dansal' => [
-        'name' => 'Dansal',
-        'marker' => ['x' => 68.2, 'y' => 37.5],
-        'hero' => null,
-        'maps_url' => 'https://www.google.com/maps/search/?api=1&query=Dansal+Jammu',
-        'bmo' => [
-            'name' => 'Dr. Arun Bhasin',
-            'title' => 'Block Medical Officer',
-            'phone' => '9419101501',
-            'photo' => null,
-        ],
-        'gallery' => [],
-        'infrastructure' => "Block Hospital Dansal with 24 beds, 5 OPD rooms, immunization clinic, and a small OT. Hilly terrain; two ambulances for ridge villages. Staff hostel on campus.",
-        'equipments' => "Portable X-ray, 2 ambulances, oxygen concentrators (4), ILR, microscope, and labour-room set. Tele-ECG linked to district hospital.",
-        'roadmap' => "New OPD block, water-treatment plant, and a weekly dental camp from next financial year.",
-        'staff' => [
-            ['name' => 'Dr. Arun Bhasin', 'role' => 'Block Medical Officer', 'phone' => '9419101501'],
-            ['name' => 'Dr. Farzana Akhtar', 'role' => 'Medical Officer', 'phone' => '9419101502'],
-            ['name' => 'Smt. Anita Kumari', 'role' => 'Staff Nurse', 'phone' => '9419101503'],
-        ],
-        'phcs' => [
-            $jfPhc('phc-dansal', 'PHC Dansal', 'PHC Dansal Jammu', 'Dr. Mohit Sharma', '9419101511', 'Dansal'),
-            $jfPhc('phc-jagti', 'PHC Jagti', 'PHC Jagti Jammu', 'Dr. Ritu Devi', '9419101512', 'Dansal'),
-        ],
-    ],
-    'marh' => [
-        'name' => 'Marh',
-        'marker' => ['x' => 38.5, 'y' => 52],
-        'hero' => null,
-        'maps_url' => 'https://www.google.com/maps/search/?api=1&query=Marh+Jammu',
-        'bmo' => [
-            'name' => 'Dr. Kavita Slathia',
-            'title' => 'Block Medical Officer',
-            'phone' => '9419101601',
-            'photo' => null,
-        ],
-        'gallery' => [],
-        'infrastructure' => "Block Hospital Marh: 28 beds, OPD, labour room, lab, and pharmacy. Campus has a waiting hall and two staff quarters. Road connectivity is good from Jammu city.",
-        'equipments' => "X-ray, 2 ambulances, oxygen concentrators (5), ECG, autoclave, and cold chain. NCD screening kit for hypertension and diabetes.",
-        'roadmap' => "Add a dialysis day-care chair (shared), renovate labour room, and start evening OPD twice a week.",
-        'staff' => [
-            ['name' => 'Dr. Kavita Slathia', 'role' => 'Block Medical Officer', 'phone' => '9419101601'],
-            ['name' => 'Dr. Sandeep Singh', 'role' => 'Medical Officer', 'phone' => '9419101602'],
-            ['name' => 'Sh. Tarsem Lal', 'role' => 'Pharmacist', 'phone' => '9419101603'],
-        ],
-        'phcs' => [
-            $jfPhc('phc-marh', 'PHC Marh', 'PHC Marh Jammu', 'Dr. Palvi Sharma', '9419101611', 'Marh'),
-        ],
-    ],
+    'pallanwala' => require __DIR__ . DIRECTORY_SEPARATOR . 'pallanwala.php',
+    'chowki-choura' => require __DIR__ . DIRECTORY_SEPARATOR . 'chowki-choura.php',
+    'akhnoor' => require __DIR__ . DIRECTORY_SEPARATOR . 'akhnoor.php',
+    'kot-bhalwal' => require __DIR__ . DIRECTORY_SEPARATOR . 'kot-bhalwal.php',
+    'dansal' => require __DIR__ . DIRECTORY_SEPARATOR . 'dansal.php',
+    'marh' => require __DIR__ . DIRECTORY_SEPARATOR . 'marh.php',
     'jammu' => [
         'name' => 'Jammu',
         'marker' => ['x' => 70.5, 'y' => 53.5],
@@ -216,78 +72,7 @@ return [
             $jfPhc('phc-gandhi-nagar', 'UPHC Gandhi Nagar', 'UPHC Gandhi Nagar Jammu', 'Dr. Sahil Verma', '9419101712', 'Jammu'),
         ],
     ],
-    'sohanjana' => [
-        'name' => 'Sohanjana',
-        'marker' => ['x' => 54.5, 'y' => 65.5],
-        'hero' => null,
-        'maps_url' => 'https://www.google.com/maps/search/?api=1&query=Sohanjana+Jammu',
-        'bmo' => [
-            'name' => 'Dr. Balbir Singh',
-            'title' => 'Block Medical Officer',
-            'phone' => '9419101801',
-            'photo' => null,
-        ],
-        'gallery' => [],
-        'infrastructure' => "Block Hospital Sohanjana: 22 beds, OPD, labour room, and lab. Open campus with waiting shed. Ambulance cover for adjoining villages.",
-        'equipments' => "X-ray (on call), 1 ambulance, oxygen concentrators (3), ILR, microscope, and delivery kits.",
-        'roadmap' => "Boundary wall, new generator, and a weekly eye camp with district ophthalmology.",
-        'staff' => [
-            ['name' => 'Dr. Balbir Singh', 'role' => 'Block Medical Officer', 'phone' => '9419101801'],
-            ['name' => 'Dr. Monika Devi', 'role' => 'Medical Officer', 'phone' => '9419101802'],
-            ['name' => 'Smt. Rajni Bala', 'role' => 'ANM', 'phone' => '9419101803'],
-        ],
-        'phcs' => [
-            $jfPhc('phc-sohanjana', 'PHC Sohanjana', 'PHC Sohanjana Jammu', 'Dr. Varun Sharma', '9419101811', 'Sohanjana'),
-        ],
-    ],
-    'rs-pura' => [
-        'name' => 'R S Pura',
-        'marker' => ['x' => 42, 'y' => 79],
-        'hero' => null,
-        'maps_url' => 'https://www.google.com/maps/search/?api=1&query=RS+Pura+Jammu',
-        'bmo' => [
-            'name' => 'Dr. Nirmal Kour',
-            'title' => 'Block Medical Officer',
-            'phone' => '9419101901',
-            'photo' => null,
-        ],
-        'gallery' => [],
-        'infrastructure' => "Block Hospital R S Pura: 36 beds, busy OPD, labour room, lab, and pharmacy. Border-area facility with strong referral to district hospital. Staff quarters on campus.",
-        'equipments' => "X-ray, 2 ambulances, oxygen concentrators (5), ECG, autoclave, cold chain, and NCD clinic equipment.",
-        'roadmap' => "New maternal waiting home, upgrade of lab analyzers, and evening NCD clinic.",
-        'staff' => [
-            ['name' => 'Dr. Nirmal Kour', 'role' => 'Block Medical Officer', 'phone' => '9419101901'],
-            ['name' => 'Dr. Gaurav Sharma', 'role' => 'Medical Officer', 'phone' => '9419101902'],
-            ['name' => 'Sh. Surinder Kumar', 'role' => 'Pharmacist', 'phone' => '9419101903'],
-            ['name' => 'Smt. Jasvinder Kour', 'role' => 'Staff Nurse', 'phone' => '9419101904'],
-        ],
-        'phcs' => [
-            $jfPhc('phc-rs-pura', 'PHC R S Pura', 'PHC RS Pura Jammu', 'Dr. Preeti Mahajan', '9419101911', 'R S Pura'),
-            $jfPhc('phc-suchetgarh', 'PHC Suchetgarh', 'PHC Suchetgarh Jammu', 'Dr. Amit Langeh', '9419101912', 'R S Pura'),
-        ],
-    ],
-    'bishnah' => [
-        'name' => 'Bishnah',
-        'marker' => ['x' => 57.5, 'y' => 90],
-        'hero' => null,
-        'maps_url' => 'https://www.google.com/maps/search/?api=1&query=Bishnah+Jammu',
-        'bmo' => [
-            'name' => 'Dr. Parveen Kumar',
-            'title' => 'Block Medical Officer',
-            'phone' => '9419102001',
-            'photo' => null,
-        ],
-        'gallery' => [],
-        'infrastructure' => "Block Hospital Bishnah: 32 beds, OPD, labour room, minor OT, and lab. Good road access from Jammu–Pathankot highway. Waiting area and ambulance bay on site.",
-        'equipments' => "X-ray, 2 ambulances, oxygen concentrators (4), ECG, ILR, and basic lab. Delivery and emergency trays ready 24×7.",
-        'roadmap' => "New diagnostic room, solar backup, and monthly specialist outreach (medicine, pediatrics).",
-        'staff' => [
-            ['name' => 'Dr. Parveen Kumar', 'role' => 'Block Medical Officer', 'phone' => '9419102001'],
-            ['name' => 'Dr. Surbhi Sharma', 'role' => 'Medical Officer', 'phone' => '9419102002'],
-            ['name' => 'Smt. Rekha Rani', 'role' => 'Nursing Sister', 'phone' => '9419102003'],
-        ],
-        'phcs' => [
-            $jfPhc('phc-bishnah', 'PHC Bishnah', 'PHC Bishnah Jammu', 'Dr. Rahul Singh', '9419102011', 'Bishnah'),
-        ],
-    ],
+    'sohanjana' => require __DIR__ . DIRECTORY_SEPARATOR . 'sohanjana.php',
+    'rs-pura' => require __DIR__ . DIRECTORY_SEPARATOR . 'rs-pura.php',
+    'bishnah' => require __DIR__ . DIRECTORY_SEPARATOR . 'bishnah.php',
 ];

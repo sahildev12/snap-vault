@@ -66,19 +66,28 @@ class SchemaMigrator
         ];
     }
 
+    public static function tableExists(string $table): bool
+    {
+        $stmt = Database::getConnection()->prepare(
+            'SELECT COUNT(*) FROM information_schema.tables
+             WHERE table_schema = DATABASE() AND table_name = ?'
+        );
+        $stmt->execute([$table]);
+        return ((int) $stmt->fetchColumn()) > 0;
+    }
+
+    public static function pendingCount(): int
+    {
+        return count(array_filter(self::status(), static fn(array $step): bool => !$step['applied']));
+    }
+
     /** @return array<string,bool> */
     public static function tablePresence(): array
     {
-        $needed = ['users', 'uploads', 'tasks', 'task_files', 'notifications', 'messages', 'schema_migrations'];
-        $pdo = Database::getConnection();
+        $needed = ['users', 'uploads', 'tasks', 'task_files', 'presentations', 'notifications', 'messages', 'schema_migrations'];
         $out = [];
         foreach ($needed as $table) {
-            $stmt = $pdo->prepare(
-                'SELECT COUNT(*) FROM information_schema.tables
-                 WHERE table_schema = DATABASE() AND table_name = ?'
-            );
-            $stmt->execute([$table]);
-            $out[$table] = ((int) $stmt->fetchColumn()) > 0;
+            $out[$table] = self::tableExists($table);
         }
         return $out;
     }
@@ -211,6 +220,68 @@ class SchemaMigrator
                             CONSTRAINT fk_messages_from FOREIGN KEY (from_user_id) REFERENCES users(id) ON DELETE CASCADE ON UPDATE CASCADE,
                             CONSTRAINT fk_messages_to FOREIGN KEY (to_user_id) REFERENCES users(id) ON DELETE CASCADE ON UPDATE CASCADE
                         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci"
+                    );
+                },
+            ],
+            '2026_09_presentations' => [
+                'label' => 'Create presentations table',
+                'up'    => static function (PDO $pdo): void {
+                    $pdo->exec(
+                        "CREATE TABLE IF NOT EXISTS presentations (
+                            id INT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
+                            user_id INT UNSIGNED NOT NULL,
+                            title VARCHAR(200) NOT NULL,
+                            filename VARCHAR(255) NOT NULL,
+                            original_name VARCHAR(255) NOT NULL,
+                            description TEXT DEFAULT NULL,
+                            meeting_date DATE DEFAULT NULL,
+                            file_size INT UNSIGNED DEFAULT NULL,
+                            created_at DATETIME NOT NULL DEFAULT CURRENT_TIMESTAMP,
+                            INDEX idx_presentations_user (user_id),
+                            INDEX idx_presentations_meeting (meeting_date),
+                            INDEX idx_presentations_created (created_at),
+                            CONSTRAINT fk_presentations_user FOREIGN KEY (user_id) REFERENCES users(id) ON DELETE CASCADE ON UPDATE CASCADE
+                        ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci"
+                    );
+                },
+            ],
+            '2026_09_presentations_demo_flag' => [
+                'label' => 'Add is_demo flag to presentations',
+                'up'    => static function (PDO $pdo): void {
+                    $pdo->exec(
+                        "ALTER TABLE presentations
+                         ADD COLUMN is_demo TINYINT(1) NOT NULL DEFAULT 0 AFTER file_size,
+                         ADD INDEX idx_presentations_demo (is_demo)"
+                    );
+                },
+            ],
+            '2026_09_system_demo_flags' => [
+                'label' => 'Add is_demo flags for system-wide demo data',
+                'up'    => static function (PDO $pdo): void {
+                    $pdo->exec(
+                        "ALTER TABLE users
+                         ADD COLUMN is_demo TINYINT(1) NOT NULL DEFAULT 0 AFTER status,
+                         ADD INDEX idx_users_demo (is_demo)"
+                    );
+                    $pdo->exec(
+                        "ALTER TABLE uploads
+                         ADD COLUMN is_demo TINYINT(1) NOT NULL DEFAULT 0 AFTER description,
+                         ADD INDEX idx_uploads_demo (is_demo)"
+                    );
+                    $pdo->exec(
+                        "ALTER TABLE tasks
+                         ADD COLUMN is_demo TINYINT(1) NOT NULL DEFAULT 0 AFTER completion_note,
+                         ADD INDEX idx_tasks_demo (is_demo)"
+                    );
+                    $pdo->exec(
+                        "ALTER TABLE messages
+                         ADD COLUMN is_demo TINYINT(1) NOT NULL DEFAULT 0 AFTER body,
+                         ADD INDEX idx_messages_demo (is_demo)"
+                    );
+                    $pdo->exec(
+                        "ALTER TABLE notifications
+                         ADD COLUMN is_demo TINYINT(1) NOT NULL DEFAULT 0 AFTER link,
+                         ADD INDEX idx_notifications_demo (is_demo)"
                     );
                 },
             ],

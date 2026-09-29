@@ -13,15 +13,18 @@ $name = (string) ($phc['name'] ?? 'PHC');
 $person = $phc['incharge'] ?? [];
 $hero = BlockMap::heroUrl($phc['hero'] ?? null);
 $photo = BlockMap::photoUrl($person['photo'] ?? null);
-$phone = trim((string) ($person['phone'] ?? '—'));
+$phone = trim((string) ($person['phone'] ?? ''));
 $phoneHref = preg_replace('/\D+/', '', $phone) ?: '';
+if ($phone === '') {
+    $phone = '—';
+}
 
 $cmoPageTitle = $name;
 $cmoSubtitle = $name;
 require BASE_PATH . 'includes/map-cmo-start.php';
 ?>
 
-<section class="cmo-hero" style="background-image:url('<?= Helper::e($hero) ?>')">
+<section class="cmo-hero<?= $view === 'home' ? ' is-home' : ' is-section' ?>" style="background-image:url('<?= Helper::e($hero) ?>')">
     <div class="cmo-hero-inner">
         <?php if ($view === 'home'): ?>
             <aside class="cmo-profile-card">
@@ -49,37 +52,37 @@ require BASE_PATH . 'includes/map-cmo-start.php';
                         <span class="cmo-action-icon is-info"><i class="bi bi-info-circle"></i></span>
                         <h2 class="cmo-action-title">PHC Details</h2>
                         <span class="cmo-action-rule"></span>
-                        <p class="cmo-action-text">Information provided for this PHC</p>
+                        <p class="cmo-action-text">Information provided<br>for this PHC</p>
                     </a>
                     <a class="cmo-action" href="<?= Helper::e(BlockMap::phcUrl($blockSlug, $phcSlug, 'gallery')) ?>">
                         <span class="cmo-action-icon is-gallery"><i class="bi bi-image"></i></span>
                         <h2 class="cmo-action-title">Photo Gallery</h2>
                         <span class="cmo-action-rule"></span>
-                        <p class="cmo-action-text">View photos of this PHC</p>
+                        <p class="cmo-action-text">View photos of<br>this PHC</p>
                     </a>
                     <a class="cmo-action" href="<?= Helper::e((string) ($phc['maps_url'] ?? '#')) ?>" target="_blank" rel="noopener">
                         <span class="cmo-action-icon is-maps"><i class="bi bi-geo-alt-fill"></i></span>
                         <h2 class="cmo-action-title">Google Location</h2>
                         <span class="cmo-action-rule"></span>
-                        <p class="cmo-action-text">View PHC location on Google Maps</p>
+                        <p class="cmo-action-text">View PHC location<br>on Google Maps</p>
                     </a>
                     <a class="cmo-action" href="<?= Helper::e(BlockMap::phcUrl($blockSlug, $phcSlug, 'infrastructure')) ?>">
                         <span class="cmo-action-icon is-infra"><i class="bi bi-buildings"></i></span>
                         <h2 class="cmo-action-title">Infrastructure</h2>
                         <span class="cmo-action-rule"></span>
-                        <p class="cmo-action-text">Details of infrastructure and facilities</p>
+                        <p class="cmo-action-text">Details of infrastructure<br>and facilities</p>
                     </a>
                     <a class="cmo-action" href="<?= Helper::e(BlockMap::phcUrl($blockSlug, $phcSlug, 'equipments')) ?>">
                         <span class="cmo-action-icon is-equip"><i class="bi bi-gear-wide-connected"></i></span>
                         <h2 class="cmo-action-title">Equipments Using</h2>
                         <span class="cmo-action-rule"></span>
-                        <p class="cmo-action-text">Information about major equipments</p>
+                        <p class="cmo-action-text">Information about<br>major equipments</p>
                     </a>
                     <a class="cmo-action" href="<?= Helper::e(BlockMap::phcUrl($blockSlug, $phcSlug, 'roadmap')) ?>">
                         <span class="cmo-action-icon is-road"><i class="bi bi-map"></i></span>
                         <h2 class="cmo-action-title">Next Year Road Map</h2>
                         <span class="cmo-action-rule"></span>
-                        <p class="cmo-action-text">Plan and proposed developments</p>
+                        <p class="cmo-action-text">Plan and proposed<br>developments</p>
                     </a>
                 </div>
             </div>
@@ -111,21 +114,23 @@ require BASE_PATH . 'includes/map-cmo-start.php';
 
                 <?php elseif ($view === 'infrastructure'): ?>
                     <h2>Infrastructure</h2>
-                    <p><?= nl2br(Helper::e((string) ($phc['infrastructure'] ?? ''))) ?></p>
+                    <?php $sectionData = $phc['infrastructure'] ?? ''; require BASE_PATH . 'includes/map-data-section.php'; ?>
 
                 <?php elseif ($view === 'equipments'): ?>
                     <h2>Equipments Using</h2>
-                    <p><?= nl2br(Helper::e((string) ($phc['equipments'] ?? ''))) ?></p>
+                    <?php $sectionData = $phc['equipments'] ?? ''; require BASE_PATH . 'includes/map-data-section.php'; ?>
 
                 <?php elseif ($view === 'roadmap'): ?>
                     <h2>Next Year Road Map</h2>
-                    <p><?= nl2br(Helper::e((string) ($phc['roadmap'] ?? ''))) ?></p>
+                    <?php $sectionData = $phc['roadmap'] ?? ''; require BASE_PATH . 'includes/map-data-section.php'; ?>
 
                 <?php elseif ($view === 'staff'): ?>
                     <h2>Staff List</h2>
                     <?php $staff = $phc['staff'] ?? []; ?>
                     <?php if ($staff === []): ?>
                         <div class="cmo-empty">Staff list will appear here once provided by CMO Jammu.</div>
+                    <?php elseif (is_array($staff) && isset($staff['groups'])): ?>
+                        <?php $sectionData = $staff; require BASE_PATH . 'includes/map-data-section.php'; ?>
                     <?php else: ?>
                         <table class="cmo-staff-table">
                             <thead>

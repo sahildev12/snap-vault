@@ -1,6 +1,6 @@
 <?php
 /**
- * File-only application logger (never printed to the browser)
+ * File-only application logger with Laravel-style error rendering
  */
 declare(strict_types=1);
 
@@ -32,16 +32,18 @@ class AppLog
 
     public static function registerHandlers(): void
     {
-        // Never leak errors to the panel / browser
-        ini_set('display_errors', '0');
-        ini_set('display_startup_errors', '0');
-        ini_set('log_errors', '0'); // we handle logging ourselves
+        $debug = defined('APP_DEBUG') && APP_DEBUG;
+
+        ini_set('display_errors', $debug ? '1' : '0');
+        ini_set('display_startup_errors', $debug ? '1' : '0');
+        ini_set('log_errors', '0');
         error_reporting(E_ALL);
 
         set_error_handler(static function (int $severity, string $message, string $file, int $line): bool {
             if (!(error_reporting() & $severity)) {
                 return false;
             }
+
             $label = match ($severity) {
                 E_ERROR, E_USER_ERROR, E_RECOVERABLE_ERROR => 'ERROR',
                 E_WARNING, E_USER_WARNING => 'WARNING',
@@ -49,18 +51,27 @@ class AppLog
                 default => 'ERROR',
             };
             self::write($label, $message, ['file' => $file . ':' . $line, 'severity' => $severity]);
-            // Fatal-class errors should still escalate
-            return in_array($severity, [E_ERROR, E_USER_ERROR, E_RECOVERABLE_ERROR, E_PARSE], true) ? false : true;
+
+            if (defined('APP_DEBUG') && APP_DEBUG) {
+                $escalate = in_array($severity, [
+                    E_ERROR,
+                    E_USER_ERROR,
+                    E_RECOVERABLE_ERROR,
+                    E_WARNING,
+                    E_USER_WARNING,
+                ], true);
+
+                if ($escalate) {
+                    throw new ErrorException($message, 0, $severity, $file, $line);
+                }
+            }
+
+            return !in_array($severity, [E_ERROR, E_USER_ERROR, E_RECOVERABLE_ERROR, E_PARSE], true);
         });
 
         set_exception_handler(static function (Throwable $e): void {
             self::exception($e);
-            if (!headers_sent()) {
-                http_response_code(500);
-                header('Content-Type: text/plain; charset=UTF-8');
-            }
-            echo 'Something went wrong. Please try again later.';
-            exit(1);
+            ErrorRenderer::renderException($e, self::exceptionStatusCode($e));
         });
 
         register_shutdown_function(static function (): void {
@@ -68,14 +79,39 @@ class AppLog
             if ($err === null) {
                 return;
             }
+
             $fatalTypes = [E_ERROR, E_PARSE, E_CORE_ERROR, E_COMPILE_ERROR];
             if (!in_array($err['type'], $fatalTypes, true)) {
                 return;
             }
+
             self::write('FATAL', (string) $err['message'], [
                 'file' => ($err['file'] ?? '') . ':' . ($err['line'] ?? 0),
             ]);
+
+            if (!defined('APP_DEBUG') || !APP_DEBUG) {
+                return;
+            }
+
+            $exception = new ErrorException(
+                (string) $err['message'],
+                0,
+                (int) $err['type'],
+                (string) ($err['file'] ?? ''),
+                (int) ($err['line'] ?? 0)
+            );
+            ErrorRenderer::renderException($exception, 500);
         });
+    }
+
+    private static function exceptionStatusCode(Throwable $e): int
+    {
+        $code = (int) $e->getCode();
+        if ($code >= 400 && $code < 600) {
+            return $code;
+        }
+
+        return 500;
     }
 
     private static function write(string $level, string $message, array $context = []): void
